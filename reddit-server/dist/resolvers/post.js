@@ -17,7 +17,6 @@ const isAuth_1 = require("../middleware/isAuth");
 const type_graphql_1 = require("type-graphql");
 const Post_1 = require("../entities/Post");
 const typeorm_1 = require("typeorm");
-const Updoot_1 = require("../entities/Updoot");
 let PaginatedPosts = class PaginatedPosts {
 };
 __decorate([
@@ -67,40 +66,6 @@ let PostResolver = class PostResolver {
     getPost(id) {
         return Post_1.Post.findOne(id, { relations: ["creator"] });
     }
-    async vote(value, postId, { req }) {
-        const { userId } = req.session;
-        const isUpdoot = value !== -1;
-        const realValue = isUpdoot ? 1 : -1;
-        const updoot = await Updoot_1.Updoot.findOne({ where: { postId, userId } });
-        if (updoot && updoot.value !== realValue) {
-            await typeorm_1.getConnection().transaction(async (tm) => {
-                await tm.query(`
-    update updoot
-    set value = $1
-    where "postId" = $2 and "userId" = $3
-        `, [realValue, postId, userId]);
-                await tm.query(`
-          update post
-          set points = points + $1
-          where id = $2
-        `, [2 * realValue, postId]);
-            });
-        }
-        else if (!updoot) {
-            await typeorm_1.getConnection().transaction(async (tm) => {
-                await tm.query(`
-    insert into updoot ("userId", "postId", value)
-    values ($1, $2, $3)
-        `, [userId, postId, realValue]);
-                await tm.query(`
-    update post
-    set points = points + $1
-    where id = $2
-      `, [realValue, postId]);
-            });
-        }
-        return true;
-    }
     async createPost(input, { req }) {
         return Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
     }
@@ -144,16 +109,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "getPost", null);
-__decorate([
-    type_graphql_1.Mutation(() => Boolean),
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    __param(0, type_graphql_1.Arg("value", () => type_graphql_1.Int)),
-    __param(1, type_graphql_1.Arg("postId", () => type_graphql_1.Int)),
-    __param(2, type_graphql_1.Ctx()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, Object]),
-    __metadata("design:returntype", Promise)
-], PostResolver.prototype, "vote", null);
 __decorate([
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     type_graphql_1.Mutation(() => Post_1.Post),

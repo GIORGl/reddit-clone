@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Updoot } from "./Updoot";
+
 import { User } from "./User";
 
 @ObjectType()
@@ -31,9 +31,7 @@ export class Post extends BaseEntity {
   @Column()
   text!: string;
 
-  @OneToMany(() => Updoot, updoot => updoot.post)
-  updoots: Updoot[];
-
+  
   @Field()
   @Column({ type: "int", default: 0 })
   points!: number;

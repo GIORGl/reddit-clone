@@ -9,7 +9,6 @@ import { useDeletePostMutation, useMeQuery, usePostsQuery } from "../generated/g
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { truncate } from "../utils/truncate";
 import { IconButton } from "@chakra-ui/react";
-import { UpdootSection } from "../components/UpdootSection";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 const Index = () => {
   const [variables, setVariables] = useState({
@@ -25,10 +24,12 @@ const Index = () => {
   const [, deletePost] = useDeletePostMutation();
   // console.log(data?.getPosts)
 
+  console.log(MeData)
   if (!fetching && !data) {
     return <div>Queyry failed</div>;
   }
   return (
+
     <Layout variant="regular">
       <Flex align="center">
         <Heading>Posts</Heading>
@@ -55,7 +56,6 @@ const Index = () => {
                   borderRadius="md"
                   key={post.id}
                 >
-                  <UpdootSection post={post} />
 
                   <Box flex={1}>
                     <NextLink href="post/[id]" as={`/post/${post.id}`}>

@@ -20,7 +20,6 @@ const hello_1 = require("./resolvers/hello");
 const post_1 = require("./resolvers/post");
 const user_1 = require("./resolvers/user");
 const path_1 = __importDefault(require("path"));
-const Updoot_1 = require("./entities/Updoot");
 const main = async () => {
     const connection = await typeorm_1.createConnection({
         type: "postgres",
@@ -30,7 +29,7 @@ const main = async () => {
         logging: true,
         synchronize: true,
         migrations: [path_1.default.join(__dirname, "./migrations/*")],
-        entities: [Post_1.Post, User_1.User, Updoot_1.Updoot],
+        entities: [Post_1.Post, User_1.User],
     });
     const app = express_1.default();
     const corsOptions = {
